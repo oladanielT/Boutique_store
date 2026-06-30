@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured, type Product } from './supabase'
+import type { Product } from './supabase'
 import { MOCK_PRODUCTS } from './mock-data'
 
 const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
@@ -12,43 +12,20 @@ export async function fetchProducts(options?: {
   category?: string
   newOnly?: boolean
 }): Promise<{ products: Product[]; source: 'supabase' | 'mock' }> {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      let query = supabase.from('products').select('*').order('created_at', { ascending: false })
-      if (options?.category && options.category !== 'All') {
-        query = query.eq('category', options.category)
-      }
-      if (options?.limit) query = query.limit(options.limit)
-
-      const { data, error } = await query
-      if (!error && data && data.length > 0) {
-        let products = data as Product[]
-        if (options?.newOnly) products = products.filter(isNewArrival)
-        return { products, source: 'supabase' }
-      }
-    } catch (e) {
-      console.warn('Supabase fetch failed, using mock data:', e)
-    }
-  }
-
+  // Using only mock data for now until backend is ready
   let products = [...MOCK_PRODUCTS]
+  
   if (options?.category && options.category !== 'All') {
     products = products.filter(p => p.category === options.category)
   }
   if (options?.newOnly) products = products.filter(isNewArrival)
   if (options?.limit) products = products.slice(0, options.limit)
+  
   return { products, source: 'mock' }
 }
 
 export async function fetchProductById(id: string): Promise<Product | null> {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase.from('products').select('*').eq('id', id).single()
-      if (!error && data) return data as Product
-    } catch {
-      /* fall through */
-    }
-  }
+  // Using only mock data for now until backend is ready
   return MOCK_PRODUCTS.find(p => p.id === id) ?? null
 }
 

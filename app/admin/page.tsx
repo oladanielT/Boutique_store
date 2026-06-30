@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { Navbar } from '@/components/navbar'
 import { motion } from 'framer-motion'
 import { formatPrice } from '@/lib/currency'
-import { supabase, type Order, type Product } from '@/lib/supabase'
+// Remove supabase import since we're using mock data
+import { type Order, type Product } from '@/lib/supabase'
 import { ShoppingBag, TrendingUp, Package, DollarSign } from 'lucide-react'
 import Link from 'next/link'
 
@@ -14,6 +15,78 @@ interface DashboardStats {
   totalProducts: number
   pendingOrders: number
 }
+
+// Mock data for dashboard
+const MOCK_ORDERS: Order[] = [
+  {
+    id: 'order_1',
+    order_number: 'ORD-12345',
+    customer_email: 'customer@example.com',
+    customer_name: 'John Doe',
+    status: 'completed',
+    total_amount: 15000,
+    stripe_session_id: 'sess_123',
+    stripe_payment_intent_id: 'pi_123',
+    shipping_address: '123 Main St, City, Country',
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'order_2',
+    order_number: 'ORD-12346',
+    customer_email: 'jane@example.com',
+    customer_name: 'Jane Smith',
+    status: 'pending',
+    total_amount: 8500,
+    stripe_session_id: 'sess_124',
+    stripe_payment_intent_id: 'pi_124',
+    shipping_address: '456 Oak Ave, Town, Country',
+    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'order_3',
+    order_number: 'ORD-12347',
+    customer_email: 'bob@example.com',
+    customer_name: 'Bob Johnson',
+    status: 'processing',
+    total_amount: 22000,
+    stripe_session_id: 'sess_125',
+    stripe_payment_intent_id: 'pi_125',
+    shipping_address: '789 Pine Rd, Village, Country',
+    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'order_4',
+    order_number: 'ORD-12348',
+    customer_email: 'alice@example.com',
+    customer_name: 'Alice Williams',
+    status: 'completed',
+    total_amount: 32000,
+    stripe_session_id: 'sess_126',
+    stripe_payment_intent_id: 'pi_126',
+    shipping_address: '321 Elm St, Town, Country',
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'order_5',
+    order_number: 'ORD-12349',
+    customer_email: 'charlie@example.com',
+    customer_name: 'Charlie Brown',
+    status: 'pending',
+    total_amount: 12500,
+    stripe_session_id: 'sess_127',
+    stripe_payment_intent_id: 'pi_127',
+    shipping_address: '654 Maple Ave, City, Country',
+    created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  }
+]
+
+// Import MOCK_PRODUCTS from mock-data
+import { MOCK_PRODUCTS } from '@/lib/mock-data'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -30,34 +103,23 @@ export default function AdminDashboard() {
   }, [])
 
   const fetchDashboardData = async () => {
-    if (!supabase) {
+    // Simulate loading with mock data
+    setTimeout(() => {
+      // Calculate stats from mock data
+      const totalRevenue = MOCK_ORDERS.reduce((sum, order) => sum + (order.total_amount || 0), 0)
+      const pendingOrders = MOCK_ORDERS.filter(order => order.status === 'pending').length
+
+      setStats({
+        totalOrders: MOCK_ORDERS.length,
+        totalRevenue,
+        totalProducts: MOCK_PRODUCTS.length,
+        pendingOrders,
+      })
+
+      // Get recent orders (last 5)
+      setRecentOrders(MOCK_ORDERS.slice(0, 5))
       setLoading(false)
-      return
-    }
-    try {
-      // Fetch stats
-      const { data: orders } = await supabase.from('orders').select('*')
-      const { data: products } = await supabase.from('products').select('*')
-
-      if (orders && products) {
-        const totalRevenue = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0)
-        const pendingOrders = orders.filter(order => order.status === 'pending').length
-
-        setStats({
-          totalOrders: orders.length,
-          totalRevenue,
-          totalProducts: products.length,
-          pendingOrders,
-        })
-
-        // Get recent orders
-        setRecentOrders(orders.slice(0, 5))
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error)
-    } finally {
-      setLoading(false)
-    }
+    }, 500)
   }
 
   const StatCard = ({
@@ -198,7 +260,9 @@ export default function AdminDashboard() {
                               ? 'bg-orange-500/20 text-orange-600'
                               : order.status === 'completed'
                                 ? 'bg-green-500/20 text-green-600'
-                                : 'bg-blue-500/20 text-blue-600'
+                                : order.status === 'processing'
+                                  ? 'bg-blue-500/20 text-blue-600'
+                                  : 'bg-red-500/20 text-red-600'
                           }`}
                         >
                           {order.status}

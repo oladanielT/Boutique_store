@@ -1,64 +1,111 @@
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { verifyPassword, createToken, hashPassword } from '@/lib/auth'
+// Remove supabase import since we're using demo mode
+// import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
+import { hashPassword, verifyPassword } from '@/lib/auth'
+
+// Mock admin user for demo purposes
+const MOCK_ADMIN_USER = {
+  id: 'demo-admin',
+  email: 'admin@example.com',
+  password_hash: '$2b$10$8K1p/a0SIuIY6VJOFn4ZFeBuz6GnvTieztWWN/.Ey.CGrvD.PAPaC', // Hash for 'password123'
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { email, password } = body
+    const { email, password } = await request.json()
 
     if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password required' }, { status: 400 })
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
     }
 
-    if (!isSupabaseConfigured || !supabase) {
-      console.log('Supabase not configured - admin login unavailable')
-      // Instead of returning 503, return a more descriptive error that won't cause 404
-      return NextResponse.json({ 
-        error: 'Database not configured. Admin login requires database configuration.', 
-        requiresSetup: true 
-      }, { status: 200 })
+    // In demo mode, allow hardcoded credentials
+    if (email === 'admin@example.com' && password === 'password123') {
+      // Generate a simple token for demo purposes (in production, use proper JWT)
+      const token = `demo_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      // Set cookie with token
+      const response = NextResponse.json({ success: true, user: { id: 'demo-admin', email } })
+      response.cookies.set('admin_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24, // 24 hours
+        path: '/',
+        sameSite: 'strict',
+      })
+      
+      return response
     }
 
-    // Check if admin user exists
-    const { data: admin, error } = await supabase.from('admin_users').select('*').eq('email', email).single()
-
-    if (error || !admin) {
-      // If no admin exists and this is the first login, create one with provided credentials
-      const { data: allAdmins } = await supabase.from('admin_users').select('id')
-
-      if (allAdmins?.length === 0 && email === 'admin@tunasky.com' && password === 'Admin123!') {
-        // Create the default admin user
-        const hashedPassword = await hashPassword(password)
-        const { error: createError } = await supabase.from('admin_users').insert({
-          email,
-          password_hash: hashedPassword,
-        })
-
-        if (createError) {
-          return NextResponse.json({ error: 'Failed to create admin user' }, { status: 500 })
-        }
-
-        const token = await createToken(email)
-        return NextResponse.json({ token, email })
-      }
-
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
-    }
-
-    // Verify password
-    const passwordValid = await verifyPassword(password, admin.password_hash)
-
-    if (!passwordValid) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
-    }
-
-    // Create JWT token
-    const token = await createToken(admin.email)
-
-    return NextResponse.json({ token, email: admin.email })
+    // For other credentials, return unauthorized
+    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+/* Original Supabase code - commented out for now
+export async function POST(request: NextRequest) {
+  try {
+    const { email, password } = await request.json()
+
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
+    }
+
+    if (!isSupabaseConfigured || !supabase) {
+      // In demo mode, allow hardcoded credentials
+      if (email === 'admin@example.com' && password === 'password123') {
+        // Generate a simple token for demo purposes (in production, use proper JWT)
+        const token = `demo_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        
+        // Set cookie with token
+        const response = NextResponse.json({ success: true, user: { id: 'demo-admin', email } })
+        response.cookies.set('admin_token', token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 60 * 60 * 24, // 24 hours
+          path: '/',
+          sameSite: 'strict',
+        })
+        
+        return response
+      }
+      
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
+
+    // Verify admin credentials against the database
+    const { data: admin, error } = await supabase.from('admin_users').select('*').eq('email', email).single()
+
+    if (error || !admin) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
+
+    const isValid = await verifyPassword(password, admin.password_hash)
+
+    if (!isValid) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
+
+    // Generate JWT token (simplified for demo)
+    const token = `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    const response = NextResponse.json({ success: true, user: { id: admin.id, email: admin.email } })
+    response.cookies.set('admin_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: '/',
+      sameSite: 'strict',
+    })
+
+    return response
+  } catch (error) {
+    console.error('Login error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+*/

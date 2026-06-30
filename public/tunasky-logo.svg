@@ -1,0 +1,25 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: light) {
+      .background { fill: #f5f5f4; }
+      .primary { fill: #d4af37; }
+      .secondary { fill: #1f2937; }
+    }
+    @media (prefers-color-scheme: dark) {
+      .background { fill: #111827; }
+      .primary { fill: #d4af37; }
+      .secondary { fill: #f9fafb; }
+    }
+  </style>
+  <rect class="background" width="180" height="180" rx="37" />
+  <g style="transform: scale(95%); transform-origin: center">
+    <!-- Fashion icon - stylized hanger -->
+    <path class="primary" d="M90 40C70 40 70 65 90 65C110 65 110 40 90 40Z" />
+    <path class="secondary" d="M90 65L75 90L75 120L105 120L105 90L90 65Z" />
+    <circle class="primary" cx="90" cy="35" r="8" />
+    
+    <!-- Decorative elements -->
+    <path class="primary" d="M50 130C50 125 55 120 60 120C65 120 70 125 70 130" stroke-width="3" stroke-linecap="round" />
+    <path class="primary" d="M110 130C110 125 115 120 120 120C125 120 130 125 130 130" stroke-width="3" stroke-linecap="round" />
+  </g>
+</svg>

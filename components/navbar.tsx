@@ -42,21 +42,24 @@ export function Navbar({ cartCount = 0, isAdmin = false }: { cartCount?: number;
           <div className="flex items-center gap-2 sm:gap-5">
             {!isAdmin ? (
               <>
-                <Link href="/products" className={`text-sm font-medium hover:text-accent transition-colors hidden md:inline ${transparent ? 'text-white' : 'text-foreground'}`}>
+                <Link href="/" className={`text-sm font-medium transition-colors ${transparent ? 'text-white hover:text-accent' : 'text-foreground hover:text-accent'} hidden md:inline`}>
+                  Home
+                </Link>
+                <Link href="/products" className={`text-sm font-medium transition-colors ${transparent ? 'text-white hover:text-accent' : 'text-foreground hover:text-accent'} hidden md:inline`}>
                   Shop
                 </Link>
-                <Link href="/lookbook" className={`text-sm font-medium hover:text-accent transition-colors hidden md:inline ${transparent ? 'text-white' : 'text-foreground'}`}>
+                <Link href="/orders" className={`text-sm font-medium transition-colors ${transparent ? 'text-white hover:text-accent' : 'text-foreground hover:text-accent'} hidden md:inline`}>
+                  My Orders
+                </Link>
+                <Link href="/lookbook" className={`text-sm font-medium transition-colors ${transparent ? 'text-white hover:text-accent' : 'text-foreground hover:text-accent'} hidden md:inline`}>
                   Lookbook
                 </Link>
                 <Link 
                   href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`hidden md:flex items-center gap-1.5 text-sm font-medium hover:text-accent transition-colors ${transparent ? 'text-white' : 'text-foreground'}`}
-                  aria-label="Chat with us on WhatsApp"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Chat</span>
+                  className={`text-sm font-medium transition-colors ${transparent ? 'text-white hover:text-accent' : 'text-foreground hover:text-accent'} hidden lg:block`}>
+                  WhatsApp
                 </Link>
                 <div className={transparent ? '[&_button]:text-white' : ''}><ThemeToggle /></div>
                 <Link href="/cart" aria-label={`Shopping cart with ${cartCount} items`} className="relative group p-2">
@@ -112,6 +115,7 @@ export function Navbar({ cartCount = 0, isAdmin = false }: { cartCount?: number;
           <div className="md:hidden border-t border-border py-3 grid">
             <Link href="/products" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-foreground">Shop</Link>
             <Link href="/lookbook" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-foreground">Lookbook</Link>
+            <Link href="/orders" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-foreground">My Orders</Link>
             <Link href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`} target="_blank" rel="noopener noreferrer" className="py-3 text-sm font-medium text-foreground flex items-center gap-2">
               <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
             </Link>

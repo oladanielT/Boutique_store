@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react'
 import { Navbar } from '@/components/navbar'
 import { formatPrice } from '@/lib/currency'
-import { supabase, type Product } from '@/lib/supabase'
+import { type Product } from '@/lib/supabase'
 import { motion } from 'framer-motion'
 import { Trash2, Edit2, Plus, Loader } from 'lucide-react'
 import Link from 'next/link'
+import { MOCK_PRODUCTS } from '@/lib/mock-data'
 
 export default function ProductsManagementPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -27,19 +28,11 @@ export default function ProductsManagementPage() {
   }, [])
 
   const fetchProducts = async () => {
-    if (!supabase) {
+    // Simulate loading with mock data
+    setTimeout(() => {
+      setProducts(MOCK_PRODUCTS)
       setLoading(false)
-      return
-    }
-    try {
-      const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-      setProducts(data || [])
-    } catch (error) {
-      console.error('Error fetching products:', error)
-    } finally {
-      setLoading(false)
-    }
+    }, 500)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -50,66 +43,50 @@ export default function ProductsManagementPage() {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!supabase) {
-      alert('Database not configured. Set Supabase environment variables to manage products.')
-      return
+    const payload = {
+      id: editingProduct ? editingProduct.id : `mock-${Date.now()}`,
+      name: formData.name,
+      description: formData.description,
+      price: parseFloat(formData.price),
+      stock_quantity: parseInt(formData.stock_quantity),
+      category: formData.category,
+      image_url: formData.image_url,
+      created_at: editingProduct ? editingProduct.created_at : new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }
 
-    try {
-      const payload = {
-        name: formData.name,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        stock_quantity: parseInt(formData.stock_quantity),
-        category: formData.category,
-        image_url: formData.image_url,
-        updated_at: new Date().toISOString(),
-      }
-
-      if (editingProduct) {
-        const { error } = await supabase.from('products').update(payload).eq('id', editingProduct.id)
-        if (error) throw error
-      } else {
-        const { error } = await supabase.from('products').insert(payload)
-        if (error) throw error
-      }
-
-      const wasEditing = !!editingProduct
-      setFormData({ name: '', description: '', price: '', stock_quantity: '', category: '', image_url: '' })
-      setEditingProduct(null)
-      setShowModal(false)
-      fetchProducts()
-
-      const toast = document.createElement('div')
-      toast.className =
-        'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50'
-      toast.textContent = wasEditing ? 'Product updated!' : 'Product added successfully!'
-      document.body.appendChild(toast)
-      setTimeout(() => toast.remove(), 2000)
-    } catch (error) {
-      console.error('Error saving product:', error)
-      alert('Error saving product')
+    if (editingProduct) {
+      // Update the product in the local state
+      setProducts(products.map(p => p.id === editingProduct.id ? payload : p))
+    } else {
+      // Add the new product to the local state
+      setProducts([payload, ...products])
     }
+
+    setFormData({ name: '', description: '', price: '', stock_quantity: '', category: '', image_url: '' })
+    setEditingProduct(null)
+    setShowModal(false)
+
+    const toast = document.createElement('div')
+    toast.className =
+      'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50'
+    toast.textContent = editingProduct ? 'Product updated!' : 'Product added successfully!'
+    document.body.appendChild(toast)
+    setTimeout(() => toast.remove(), 2000)
   }
 
   const handleDeleteProduct = async (productId: string) => {
-    if (!confirm('Are you sure you want to delete this product?')) return
-    if (!supabase) return
+    if (!confirm('Are you sure you want to delete this product? This is only simulated in demo mode.')) return
 
-    try {
-      const { error } = await supabase.from('products').delete().eq('id', productId)
-      if (error) throw error
-      fetchProducts()
+    // In demo mode, we just remove from local state
+    setProducts(products.filter(p => p.id !== productId))
 
-      const toast = document.createElement('div')
-      toast.className =
-        'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg animate-pulse z-50'
-      toast.textContent = 'Product deleted!'
-      document.body.appendChild(toast)
-      setTimeout(() => toast.remove(), 2000)
-    } catch (error) {
-      console.error('Error deleting product:', error)
-    }
+    const toast = document.createElement('div')
+    toast.className =
+      'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg animate-pulse z-50'
+    toast.textContent = 'Product removed (demo only)!'
+    document.body.appendChild(toast)
+    setTimeout(() => toast.remove(), 2000)
   }
 
   return (
@@ -124,7 +101,9 @@ export default function ProductsManagementPage() {
         >
           <div>
             <h1 className="text-5xl font-bold text-foreground mb-2">Manage Products</h1>
-            <p className="text-lg text-muted-foreground">Add, edit, and manage your product inventory</p>
+            <p className="text-lg text-muted-foreground">
+              Manage your product catalog (demo mode - changes not persisted)
+            </p>
           </div>
 
           <motion.button
@@ -237,127 +216,130 @@ export default function ProductsManagementPage() {
           </motion.div>
         )}
 
-        {/* Modal */}
+        {/* Add/Edit Product Modal */}
         {showModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-            onClick={() => setShowModal(false)}
+            onClick={() => {
+              setShowModal(false)
+              setEditingProduct(null)
+              setFormData({ name: '', description: '', price: '', stock_quantity: '', category: '', image_url: '' })
+            }}
           >
-            <motion.form
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-card border border-border rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
-              onSubmit={handleAddProduct}
-              className="bg-card border border-border rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             >
               <h2 className="text-2xl font-bold text-foreground mb-6">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Product Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="Premium T-Shirt"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    rows={3}
-                    className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="Product description..."
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+              
+              <form onSubmit={handleAddProduct}>
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">Price</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Name</label>
                     <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      step="0.01"
-                      required
-                      className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-                      placeholder="85000"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">Stock Quantity</label>
-                    <input
-                      type="number"
-                      name="stock_quantity"
-                      value={formData.stock_quantity}
+                      type="text"
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-                      placeholder="10"
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Description</label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      rows={3}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">Price (NGN)</label>
+                      <input
+                        type="number"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        required
+                        min="0"
+                        step="100"
+                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">Stock</label>
+                      <input
+                        type="number"
+                        name="stock_quantity"
+                        value={formData.stock_quantity}
+                        onChange={handleInputChange}
+                        required
+                        min="0"
+                        className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Category</label>
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Image URL</label>
+                    <input
+                      type="text"
+                      name="image_url"
+                      value={formData.image_url}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                     />
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Category</label>
-                  <input
-                    type="text"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="Clothing"
-                  />
+                
+                <div className="flex gap-3 mt-6">
+                  <motion.button
+                    type="button"
+                    onClick={() => {
+                      setShowModal(false)
+                      setEditingProduct(null)
+                      setFormData({ name: '', description: '', price: '', stock_quantity: '', category: '', image_url: '' })
+                    }}
+                    className="flex-1 py-3 bg-secondary text-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    type="submit"
+                    className="flex-1 py-3 bg-accent text-accent-foreground rounded-lg hover:shadow-lg transition-shadow"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {editingProduct ? 'Update' : 'Add'} Product
+                  </motion.button>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Image URL</label>
-                  <input
-                    type="url"
-                    name="image_url"
-                    value={formData.image_url}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-4 mt-8">
-                <motion.button
-                  type="submit"
-                  className="flex-1 px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:shadow-lg transition-shadow"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {editingProduct ? 'Update Product' : 'Add Product'}
-                </motion.button>
-
-                <motion.button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-6 py-3 bg-secondary text-foreground rounded-lg font-semibold hover:bg-muted transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </motion.form>
+              </form>
+            </motion.div>
           </motion.div>
         )}
       </section>

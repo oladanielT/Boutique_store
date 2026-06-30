@@ -3,13 +3,103 @@
 import { useEffect, useState } from 'react'
 import { Navbar } from '@/components/navbar'
 import { formatPrice } from '@/lib/currency'
-import { supabase, type Order, type OrderItem } from '@/lib/supabase'
+// Remove supabase import since we're using mock data
+import { type Order, type OrderItem } from '@/lib/supabase'
 import { motion } from 'framer-motion'
 import { ChevronDown, Loader } from 'lucide-react'
 
 interface OrderWithItems extends Order {
   items?: OrderItem[]
 }
+
+// Mock data for orders
+const MOCK_ORDERS: OrderWithItems[] = [
+  {
+    id: 'order_1',
+    order_number: 'ORD-12345',
+    customer_email: 'customer@example.com',
+    customer_name: 'John Doe',
+    status: 'completed',
+    total_amount: 15000,
+    stripe_session_id: 'sess_123',
+    stripe_payment_intent_id: 'pi_123',
+    shipping_address: '123 Main St, City, Country',
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+    items: [
+      {
+        id: 'item_1',
+        order_id: 'order_1',
+        product_id: 'prod_1',
+        quantity: 2,
+        price: 5000,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'item_2',
+        order_id: 'order_1',
+        product_id: 'prod_2',
+        quantity: 1,
+        price: 5000,
+        created_at: new Date().toISOString()
+      }
+    ]
+  },
+  {
+    id: 'order_2',
+    order_number: 'ORD-12346',
+    customer_email: 'jane@example.com',
+    customer_name: 'Jane Smith',
+    status: 'pending',
+    total_amount: 8500,
+    stripe_session_id: 'sess_124',
+    stripe_payment_intent_id: 'pi_124',
+    shipping_address: '456 Oak Ave, Town, Country',
+    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+    items: [
+      {
+        id: 'item_3',
+        order_id: 'order_2',
+        product_id: 'prod_3',
+        quantity: 1,
+        price: 8500,
+        created_at: new Date().toISOString()
+      }
+    ]
+  },
+  {
+    id: 'order_3',
+    order_number: 'ORD-12347',
+    customer_email: 'bob@example.com',
+    customer_name: 'Bob Johnson',
+    status: 'processing',
+    total_amount: 22000,
+    stripe_session_id: 'sess_125',
+    stripe_payment_intent_id: 'pi_125',
+    shipping_address: '789 Pine Rd, Village, Country',
+    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+    items: [
+      {
+        id: 'item_4',
+        order_id: 'order_3',
+        product_id: 'prod_4',
+        quantity: 1,
+        price: 12000,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'item_5',
+        order_id: 'order_3',
+        product_id: 'prod_5',
+        quantity: 2,
+        price: 5000,
+        created_at: new Date().toISOString()
+      }
+    ]
+  }
+]
 
 export default function OrdersManagementPage() {
   const [orders, setOrders] = useState<OrderWithItems[]>([])
@@ -22,48 +112,26 @@ export default function OrdersManagementPage() {
   }, [])
 
   const fetchOrders = async () => {
-    if (!supabase) {
+    // Using mock data instead of Supabase
+    // Simulate loading delay
+    setTimeout(() => {
+      setOrders(MOCK_ORDERS)
       setLoading(false)
-      return
-    }
-    const client = supabase
-    try {
-      const { data, error } = await client.from('orders').select('*').order('created_at', { ascending: false })
-      if (error) throw error
-
-      // Fetch order items for each order
-      const ordersWithItems = await Promise.all(
-        (data || []).map(async order => {
-          const { data: items } = await client.from('order_items').select('*').eq('order_id', order.id)
-          return { ...order, items: items || [] }
-        })
-      )
-
-      setOrders(ordersWithItems)
-    } catch (error) {
-      console.error('Error fetching orders:', error)
-    } finally {
-      setLoading(false)
-    }
+    }, 500)
   }
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    if (!supabase) return
-    try {
-      const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId)
+    // Update order status in mock data
+    const updatedOrders = orders.map(order => 
+      order.id === orderId ? { ...order, status: newStatus, updated_at: new Date().toISOString() } : order
+    )
+    setOrders(updatedOrders)
 
-      if (error) throw error
-
-      setOrders(orders.map(order => (order.id === orderId ? { ...order, status: newStatus } : order)))
-
-      const toast = document.createElement('div')
-      toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50'
-      toast.textContent = 'Order status updated!'
-      document.body.appendChild(toast)
-      setTimeout(() => toast.remove(), 2000)
-    } catch (error) {
-      console.error('Error updating order:', error)
-    }
+    const toast = document.createElement('div')
+    toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50'
+    toast.textContent = 'Order status updated!'
+    document.body.appendChild(toast)
+    setTimeout(() => toast.remove(), 2000)
   }
 
   const filteredOrders =
@@ -73,40 +141,57 @@ export default function OrdersManagementPage() {
     <main className="bg-background">
       <Navbar isAdmin={true} />
 
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <h1 className="text-5xl font-bold text-foreground mb-2">Manage Orders</h1>
-          <p className="text-lg text-muted-foreground">View and manage customer orders</p>
-        </motion.div>
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-foreground mb-4">Orders Management</h1>
+          <p className="text-lg text-muted-foreground">Manage and track customer orders</p>
+        </div>
 
-        {/* Filter Buttons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="flex flex-wrap gap-2 mb-8"
-        >
-          {['all', 'pending', 'processing', 'completed', 'cancelled'].map(status => (
-            <motion.button
-              key={status}
-              onClick={() => setFilterStatus(status)}
-              className={`px-4 py-2 rounded-full font-semibold transition-all ${
-                filterStatus === status
-                  ? 'bg-accent text-accent-foreground shadow-lg'
-                  : 'bg-secondary text-foreground hover:bg-muted'
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </motion.button>
-          ))}
-        </motion.div>
+        {/* Filter Controls */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          <button
+            onClick={() => setFilterStatus('all')}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              filterStatus === 'all'
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-secondary text-foreground hover:bg-secondary/80'
+            }`}
+          >
+            All Orders
+          </button>
+          <button
+            onClick={() => setFilterStatus('pending')}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              filterStatus === 'pending'
+                ? 'bg-orange-500 text-white'
+                : 'bg-secondary text-foreground hover:bg-secondary/80'
+            }`}
+          >
+            Pending
+          </button>
+          <button
+            onClick={() => setFilterStatus('processing')}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              filterStatus === 'processing'
+                ? 'bg-blue-500 text-white'
+                : 'bg-secondary text-foreground hover:bg-secondary/80'
+            }`}
+          >
+            Processing
+          </button>
+          <button
+            onClick={() => setFilterStatus('completed')}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              filterStatus === 'completed'
+                ? 'bg-green-500 text-white'
+                : 'bg-secondary text-foreground hover:bg-secondary/80'
+            }`}
+          >
+            Completed
+          </button>
+        </div>
 
+        {/* Orders List */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
@@ -227,22 +312,38 @@ export default function OrdersManagementPage() {
                     {/* Status Update */}
                     <div>
                       <h4 className="font-semibold text-foreground mb-3">Update Status</h4>
+
                       <div className="flex flex-wrap gap-2">
-                        {['pending', 'processing', 'completed', 'cancelled'].map(status => (
-                          <motion.button
-                            key={status}
-                            onClick={() => updateOrderStatus(order.id, status)}
-                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                              order.status === status
-                                ? 'bg-accent text-accent-foreground shadow-md'
-                                : 'bg-card border border-border text-foreground hover:border-accent'
-                            }`}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                          </motion.button>
-                        ))}
+                        <button
+                          onClick={() => updateOrderStatus(order.id, 'pending')}
+                          className={`px-3 py-1.5 text-sm rounded-lg font-medium ${
+                            order.status === 'pending'
+                              ? 'bg-orange-500 text-white'
+                              : 'bg-secondary text-foreground hover:bg-secondary/80'
+                          }`}
+                        >
+                          Pending
+                        </button>
+                        <button
+                          onClick={() => updateOrderStatus(order.id, 'processing')}
+                          className={`px-3 py-1.5 text-sm rounded-lg font-medium ${
+                            order.status === 'processing'
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-secondary text-foreground hover:bg-secondary/80'
+                          }`}
+                        >
+                          Processing
+                        </button>
+                        <button
+                          onClick={() => updateOrderStatus(order.id, 'completed')}
+                          className={`px-3 py-1.5 text-sm rounded-lg font-medium ${
+                            order.status === 'completed'
+                              ? 'bg-green-500 text-white'
+                              : 'bg-secondary text-foreground hover:bg-secondary/80'
+                          }`}
+                        >
+                          Completed
+                        </button>
                       </div>
                     </div>
                   </div>

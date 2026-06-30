@@ -1,4 +1,5 @@
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+// Remove supabase import since we're using demo mode
+// import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Stripe from 'stripe'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -36,6 +37,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Always use demo mode for now until backend is ready
+    console.log('Running in demo mode - checkout requires database configuration')
+    return NextResponse.json({ 
+      sessionUrl: `${baseUrl}/success?order_id=demo_order`, 
+      orderId: 'demo_order',
+      message: 'Demo mode: checkout requires database configuration'
+    })
+
+    /* Original Supabase and Stripe code - commented out for now
     if (!isSupabaseConfigured || !supabase) {
       console.log('Supabase not configured - running in demo mode')
       // Return a mock response instead of an error to prevent 404
@@ -124,6 +134,7 @@ export async function POST(request: NextRequest) {
     await supabase.from('orders').update({ stripe_session_id: session.id }).eq('id', orderData.id)
 
     return NextResponse.json({ sessionUrl: session.url, orderId: orderData.id })
+    */
   } catch (error) {
     console.error('Create order error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

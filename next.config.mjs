@@ -1,19 +1,20 @@
+// next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    typedRoutes: true,
-  },
+  typedRoutes: true,
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
+        protocol: "https",
+        hostname: "images.unsplash.com",
       },
     ],
-    formats: ['image/avif', 'image/webp'],
+    formats: ["image/avif", "image/webp"],
   },
-  // Ensure proper handling of trailing slashes
   trailingSlash: false,
-}
+  turbopack: {
+    root: import.meta.dirname,
+  },
+};
 
-export default nextConfig
+export default nextConfig;
