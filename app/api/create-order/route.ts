@@ -1,49 +1,54 @@
 // Remove supabase import since we're using demo mode
 // import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import Stripe from 'stripe'
-import { NextRequest, NextResponse } from 'next/server'
+import Stripe from "stripe";
+import { NextRequest, NextResponse } from "next/server";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY
-  if (!key) return null
-  return new Stripe(key, {
-    apiVersion: '2024-11-20.acacia', // Updated to a recent API version
-  })
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  new Stripe(key, {
+    apiVersion: "2026-06-24.dahlia",
+  });
 }
 
 interface OrderItem {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  image_url?: string
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image_url?: string;
 }
 
 interface CreateOrderRequest {
-  email: string
-  name: string
-  address: string
-  items: OrderItem[]
-  total: number
+  email: string;
+  name: string;
+  address: string;
+  items: OrderItem[];
+  total: number;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body: CreateOrderRequest = await request.json()
+    const body: CreateOrderRequest = await request.json();
 
     if (!body.email || !body.name || !body.items.length) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     // Always use demo mode for now until backend is ready
-    console.log('Running in demo mode - checkout requires database configuration')
-    return NextResponse.json({ 
-      sessionUrl: `${baseUrl}/success?order_id=demo_order`, 
-      orderId: 'demo_order',
-      message: 'Demo mode: checkout requires database configuration'
-    })
+    console.log(
+      "Running in demo mode - checkout requires database configuration",
+    );
+    return NextResponse.json({
+      sessionUrl: `${baseUrl}/success?order_id=demo_order`,
+      orderId: "demo_order",
+      message: "Demo mode: checkout requires database configuration",
+    });
 
     /* Original Supabase and Stripe code - commented out for now
     if (!isSupabaseConfigured || !supabase) {
@@ -136,7 +141,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ sessionUrl: session.url, orderId: orderData.id })
     */
   } catch (error) {
-    console.error('Create order error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Create order error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
