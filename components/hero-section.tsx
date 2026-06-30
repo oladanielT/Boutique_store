@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { useCallback, useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useCallback, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDown,
   ArrowRight,
@@ -11,31 +11,33 @@ import {
   ShieldCheck,
   Sparkles,
   Truck,
-} from 'lucide-react'
-import { HERO_SLIDES } from '@/lib/mock-data'
-import { STORE } from '@/lib/store'
-import { ProductImage } from './product-image'
-import { LinkButton } from './link-button'
+} from "lucide-react";
+import { HERO_SLIDES } from "@/lib/mock-data";
+import { STORE } from "@/lib/store";
+import { ProductImage } from "./product-image";
+import { LinkButton } from "./link-button";
 
 export function HeroSection() {
-  const [current, setCurrent] = useState(0)
-  const [paused, setPaused] = useState(false)
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   const next = useCallback(() => {
-    setCurrent(previous => (previous + 1) % HERO_SLIDES.length)
-  }, [])
+    setCurrent((previous) => (previous + 1) % HERO_SLIDES.length);
+  }, []);
 
   const previous = () => {
-    setCurrent(value => (value - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)
-  }
+    setCurrent(
+      (value) => (value - 1 + HERO_SLIDES.length) % HERO_SLIDES.length,
+    );
+  };
 
   useEffect(() => {
-    if (paused) return
-    const timer = window.setInterval(next, 6000)
-    return () => window.clearInterval(timer)
-  }, [next, paused])
+    if (paused) return;
+    const timer = window.setInterval(next, 6000);
+    return () => window.clearInterval(timer);
+  }, [next, paused]);
 
-  const slide = HERO_SLIDES[current]
+  const slide = HERO_SLIDES[current];
 
   return (
     <section
@@ -55,7 +57,7 @@ export function HeroSection() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7 }}
-            className="absolute inset-0"
+            className="absolute inset-0 overflow-hidden"
           >
             <ProductImage
               src={slide.image}
@@ -70,8 +72,9 @@ export function HeroSection() {
         </AnimatePresence>
       </div>
 
-      <div className="relative z-10 h-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 pt-24 pb-8 flex flex-col justify-between">
-        <div className="flex-1 flex items-center">
+      <div className="relative z-10 h-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 flex flex-col">
+        {/* Top content area - fixed position */}
+        <div className="pt-24 pb-8 flex-1 flex items-center min-h-0 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={current}
@@ -87,10 +90,12 @@ export function HeroSection() {
                   {STORE.city}, {STORE.country}
                 </span>
                 <span className="h-1 w-1 rounded-full bg-accent" />
-                <span className="text-xs font-semibold uppercase text-white/80">{slide.label}</span>
+                <span className="text-xs font-semibold uppercase text-white/80">
+                  {slide.label}
+                </span>
               </div>
 
-              <h1 className="font-heading text-[clamp(2.7rem,7vw,5.8rem)] font-bold text-white mb-6 leading-[0.98]">
+              <h1 className="font-heading text-[clamp(1.9rem,12vw,4.8rem)] font-bold text-white mb-6 leading-[1.05] sm:leading-[0.98]">
                 {slide.headline}
               </h1>
               <p className="text-base sm:text-lg text-white/85 mb-8 leading-relaxed max-w-xl">
@@ -98,7 +103,11 @@ export function HeroSection() {
               </p>
 
               <div className="flex flex-wrap gap-3">
-                <LinkButton href="/products" variant="accent" className="min-h-12 px-6">
+                <LinkButton
+                  href="/products"
+                  variant="accent"
+                  className="min-h-12 px-6"
+                >
                   Shop Collection
                   <ArrowRight className="w-5 h-5" />
                 </LinkButton>
@@ -114,19 +123,26 @@ export function HeroSection() {
           </AnimatePresence>
         </div>
 
-        <div className="flex items-end justify-between gap-6">
+        {/* Bottom content area - fixed position */}
+        <div className="pb-8 flex items-end justify-between gap-6 flex-shrink-0">
           <div className="hidden sm:grid grid-cols-3 divide-x divide-white/20 border-t border-white/25 pt-5 max-w-2xl flex-1">
             <div className="flex items-center gap-3 pr-5">
               <Sparkles className="w-5 h-5 text-accent shrink-0" />
-              <span className="text-xs font-medium text-white/80">Curated boutique pieces</span>
+              <span className="text-xs font-medium text-white/80">
+                Curated boutique pieces
+              </span>
             </div>
             <div className="flex items-center gap-3 px-5">
               <Truck className="w-5 h-5 text-accent shrink-0" />
-              <span className="text-xs font-medium text-white/80">Delivery across Nigeria</span>
+              <span className="text-xs font-medium text-white/80">
+                Delivery across Nigeria
+              </span>
             </div>
             <div className="flex items-center gap-3 pl-5">
               <ShieldCheck className="w-5 h-5 text-accent shrink-0" />
-              <span className="text-xs font-medium text-white/80">Secure checkout</span>
+              <span className="text-xs font-medium text-white/80">
+                Secure checkout
+              </span>
             </div>
           </div>
 
@@ -139,16 +155,21 @@ export function HeroSection() {
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="flex gap-2" aria-label={`Slide ${current + 1} of ${HERO_SLIDES.length}`}>
+            <div
+              className="flex gap-2"
+              aria-label={`Slide ${current + 1} of ${HERO_SLIDES.length}`}
+            >
               {HERO_SLIDES.map((item, index) => (
                 <button
                   key={item.headline}
                   type="button"
                   onClick={() => setCurrent(index)}
                   aria-label={`Go to slide ${index + 1}`}
-                  aria-current={index === current ? 'true' : undefined}
+                  aria-current={index === current ? "true" : undefined}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    index === current ? 'w-8 bg-accent' : 'w-1.5 bg-white/40 hover:bg-white/60'
+                    index === current
+                      ? "w-8 bg-accent"
+                      : "w-1.5 bg-white/40 hover:bg-white/60"
                   }`}
                 />
               ))}
@@ -173,5 +194,5 @@ export function HeroSection() {
         <ArrowDown className="w-5 h-5 animate-bounce" />
       </a>
     </section>
-  )
+  );
 }

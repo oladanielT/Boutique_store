@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Trash2, ArrowLeft, Check } from 'lucide-react'
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
-import { ProductImage } from '@/components/product-image'
-import { formatPrice, FREE_SHIPPING_THRESHOLD } from '@/lib/currency'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Trash2, ArrowLeft, Check } from "lucide-react";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { ProductImage } from "@/components/product-image";
+import { formatPrice, FREE_SHIPPING_THRESHOLD } from "@/lib/currency";
 import {
   getCart,
   getCartCount,
@@ -15,30 +15,37 @@ import {
   removeFromCart,
   updateCartQuantity,
   type CartItem,
-} from '@/lib/cart'
-import { LinkButton } from '@/components/link-button'
+} from "@/lib/cart";
+import { LinkButton } from "@/components/link-button";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [loading, setLoading] = useState(true)
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setCartItems(getCart())
-    setLoading(false)
-  }, [])
+    setCartItems(getCart());
+    setLoading(false);
+  }, []);
 
-  const cartCount = getCartCount(cartItems)
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 2500
-  const tax = subtotal * 0.08
-  const total = subtotal + shipping + tax
+  const cartCount = getCartCount(cartItems);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 2500;
+  const tax = subtotal * 0.08;
+  const total = subtotal + shipping + tax;
 
   const handleRemove = (item: CartItem) =>
-    setCartItems(removeFromCart(item.id, item.selectedSize, item.selectedColor))
+    setCartItems(
+      removeFromCart(item.id, item.selectedSize, item.selectedColor),
+    );
   const handleQuantity = (item: CartItem, qty: number) =>
-    setCartItems(updateCartQuantity(item.id, qty, item.selectedSize, item.selectedColor))
+    setCartItems(
+      updateCartQuantity(item.id, qty, item.selectedSize, item.selectedColor),
+    );
 
-  if (loading) return <div className="min-h-screen bg-background" />
+  if (loading) return <div className="min-h-screen bg-background" />;
 
   return (
     <main className="bg-background min-h-screen">
@@ -62,9 +69,17 @@ export default function CartPage() {
         </motion.h1>
 
         {cartItems.length === 0 ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
-            <p className="text-2xl font-semibold text-foreground mb-2">Your cart is empty</p>
-            <p className="text-muted-foreground mb-8">Discover pieces crafted for everyday elegance.</p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-20"
+          >
+            <p className="text-2xl font-semibold text-foreground mb-2">
+              Your cart is empty
+            </p>
+            <p className="text-muted-foreground mb-8">
+              Discover pieces crafted for everyday elegance.
+            </p>
             <LinkButton href="/products" variant="accent">
               Start Shopping
             </LinkButton>
@@ -78,17 +93,28 @@ export default function CartPage() {
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="flex gap-4 p-4 bg-card border border-border rounded-xl"
+                  className="flex flex-col sm:flex-row gap-4 p-4 bg-card border border-border rounded-xl"
                 >
                   <div className="relative w-24 h-28 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
-                    <ProductImage src={item.image_url} alt={item.name} fill sizes="96px" />
+                    <ProductImage
+                      src={item.image_url}
+                      alt={item.name}
+                      fill
+                      sizes="96px"
+                    />
                   </div>
                   <div className="flex-grow min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">{item.name}</h3>
-                    <p className="text-accent font-medium mt-1">{formatPrice(item.price)}</p>
+                    <h3 className="font-semibold text-foreground truncate">
+                      {item.name}
+                    </h3>
+                    <p className="text-accent font-medium mt-1">
+                      {formatPrice(item.price)}
+                    </p>
                     {(item.selectedSize || item.selectedColor) && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        {[item.selectedSize, item.selectedColor].filter(Boolean).join(' / ')}
+                        {[item.selectedSize, item.selectedColor]
+                          .filter(Boolean)
+                          .join(" / ")}
                       </p>
                     )}
                   </div>
@@ -107,7 +133,9 @@ export default function CartPage() {
                       >
                         −
                       </button>
-                      <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
+                      <span className="w-8 text-center text-sm font-semibold">
+                        {item.quantity}
+                      </span>
                       <button
                         onClick={() => handleQuantity(item, item.quantity + 1)}
                         className="w-8 h-8 flex items-center justify-center hover:text-accent"
@@ -125,7 +153,9 @@ export default function CartPage() {
               animate={{ opacity: 1, x: 0 }}
               className="h-fit sticky top-28 p-6 bg-card border border-border rounded-xl"
             >
-              <h2 className="text-lg font-bold text-foreground mb-5">Order Summary</h2>
+              <h2 className="text-lg font-bold text-foreground mb-5">
+                Order Summary
+              </h2>
               <div className="space-y-3 text-sm mb-6">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal</span>
@@ -133,11 +163,12 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Shipping</span>
-                  <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+                  <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
                 </div>
                 {subtotal < FREE_SHIPPING_THRESHOLD && (
                   <p className="text-xs text-accent">
-                    Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} more for free shipping
+                    Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} more
+                    for free shipping
                   </p>
                 )}
                 <div className="flex justify-between text-muted-foreground">
@@ -160,5 +191,5 @@ export default function CartPage() {
 
       <Footer />
     </main>
-  )
+  );
 }

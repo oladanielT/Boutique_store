@@ -17,7 +17,7 @@ const variants = {
 
 interface LinkButtonProps {
   href: Route | URL;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "accent" | "outline" | "ghost";
   className?: string;
   children: React.ReactNode;
 }
