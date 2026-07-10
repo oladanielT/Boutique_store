@@ -15,8 +15,8 @@ export default function TermsPage() {
       <Navbar cartCount={cartCount} />
       <InfoPageLayout title="Terms of Service">
         <p>Last updated: June 2026</p>
-        <p>By using tunasky.com you agree to these terms. All products are subject to availability. Prices are listed in USD and may change without notice.</p>
-        <p>We reserve the right to refuse or cancel orders. Tunasky Wears is not liable for delays caused by shipping carriers or events beyond our control.</p>
+        <p>By using Don Classic.com you agree to these terms. All products are subject to availability. Prices are listed in USD and may change without notice.</p>
+        <p>We reserve the right to refuse or cancel orders. Don Classic is not liable for delays caused by shipping carriers or events beyond our control.</p>
       </InfoPageLayout>
       <Footer />
     </main>

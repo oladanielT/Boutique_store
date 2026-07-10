@@ -15,8 +15,8 @@ export default function PrivacyPage() {
       <Navbar cartCount={cartCount} />
       <InfoPageLayout title="Privacy Policy">
         <p>Last updated: June 2026</p>
-        <p>Tunasky Wears respects your privacy. We collect only the information needed to process orders and improve your shopping experience — name, email, shipping address, and payment details (processed securely by Stripe).</p>
-        <p>We do not sell your personal data. You may unsubscribe from marketing emails at any time. For data requests, contact privacy@tunasky.com.</p>
+        <p>Don Classic respects your privacy. We collect only the information needed to process orders and improve your shopping experience — name, email, shipping address, and payment details (processed securely by Stripe).</p>
+        <p>We do not sell your personal data. You may unsubscribe from marketing emails at any time. For data requests, contact privacy@Don Classic.com.</p>
       </InfoPageLayout>
       <Footer />
     </main>

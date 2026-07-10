@@ -1,4 +1,4 @@
-# Tunasky Wears - Full Stack Ecommerce Platform
+# Don Classic - Full Stack Ecommerce Platform
 
 A modern, full-stack ecommerce platform built with Next.js 16, Supabase, Stripe, and Framer Motion animations.
 
@@ -83,7 +83,7 @@ All tables have Row Level Security (RLS) policies enabled.
 ### 5. Initialize Admin User
 
 The first admin user is created automatically on first login:
-- Email: `admin@tunasky.com`
+- Email: `admin@Don Classic.com`
 - Password: `Admin123!`
 
 These credentials will create the admin user in the database on first login.
@@ -187,7 +187,7 @@ Create admin session with JWT token
 **Request:**
 ```json
 {
-  "email": "admin@tunasky.com",
+  "email": "admin@Don Classic.com",
   "password": "Admin123!"
 }
 ```
@@ -196,7 +196,7 @@ Create admin session with JWT token
 ```json
 {
   "token": "jwt_token_here",
-  "email": "admin@tunasky.com"
+  "email": "admin@Don Classic.com"
 }
 ```
 

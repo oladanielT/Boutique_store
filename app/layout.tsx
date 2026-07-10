@@ -13,12 +13,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Tunasky Wears, Boutique Fashion in Ile-Ife",
+  title: "Don Classic, Boutique Fashion in Ile-Ife",
   description:
-    "Premium boutique fashion in Ile-Ife, Nigeria. Curated collections, quality fabrics, and timeless style from Tunasky Wears.",
+    "Premium boutique fashion in Ile-Ife, Nigeria. Curated collections, quality fabrics, and timeless style from Don Classic.",
   icons: {
     icon: [
-      { url: "/tunasky-icon.svg", type: "image/svg+xml" },
+      { url: "/Don Classic-icon.svg", type: "image/svg+xml" },
       { url: "/icon-light-32x32.png", sizes: "32x32" },
       { url: "/apple-icon.png", sizes: "180x180" }
     ],

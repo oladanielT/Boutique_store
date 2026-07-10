@@ -10,7 +10,7 @@ const faqs = [
   { q: 'What sizes do you carry?', a: 'Most pieces run XS–XL. Size details are listed in each product description. Contact us for fit guidance.' },
   { q: 'How do I track my order?', a: 'You\'ll receive a tracking link via email once your order ships. Check your spam folder if you don\'t see it within 48 hours.' },
   { q: 'Do you offer gift wrapping?', a: 'Yes — complimentary gift wrapping is available at checkout. Add a note in the order comments field.' },
-  { q: 'Can I cancel my order?', a: 'Orders can be cancelled within 2 hours of placement. Email hello@tunasky.com with your order number.' },
+  { q: 'Can I cancel my order?', a: 'Orders can be cancelled within 2 hours of placement. Email hello@Don Classic.com with your order number.' },
   { q: 'What payment methods do you accept?', a: 'We accept all major credit and debit cards via Stripe secure checkout.' },
 ]
 

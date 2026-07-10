@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
                 required
                 disabled={loading}
                 className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50"
-                placeholder="admin@tunasky.com"
+                placeholder="admin@Don Classic.com"
               />
             </div>
 
@@ -114,7 +114,7 @@ export default function AdminLoginPage() {
 
           <div className="mt-6 p-4 bg-secondary rounded-lg">
             <p className="text-sm text-muted-foreground mb-2 font-semibold">Demo Credentials:</p>
-            <p className="text-xs text-muted-foreground">Email: admin@tunasky.com</p>
+            <p className="text-xs text-muted-foreground">Email: admin@Don Classic.com</p>
             <p className="text-xs text-muted-foreground">Password: Admin123!</p>
           </div>
         </div>

@@ -39,8 +39,8 @@ export default function Home() {
     showToast(`${product.name} added to cart`)
   }
 
-  // WhatsApp number for Tunasky Wears
-  const whatsappNumber = '2348034567890' // Using the same number from store.ts but removing the + prefix for WhatsApp
+  // WhatsApp number for Don Classic
+  const whatsappNumber = '2348035419923' // Using the same number from store.ts but removing the + prefix for WhatsApp
   const whatsappMessage = encodeURIComponent('Hello! I\'m interested in your boutique items. Can you help me with some questions?')
 
   return (
@@ -155,7 +155,7 @@ export default function Home() {
               <div className="text-center px-6">
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">The Lookbook</h2>
                 <p className="text-white/80 mb-6 max-w-md mx-auto">
-                  Editorial styling and seasonal inspiration from the Tunasky studio.
+                  Editorial styling and seasonal inspiration from the Don Classic studio.
                 </p>
                 <LinkButton href="/lookbook" variant="accent" className="!bg-white !text-foreground hover:!opacity-100">
                   Explore Lookbook
