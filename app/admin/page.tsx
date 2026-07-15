@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { formatPrice } from '@/lib/currency'
 // Remove supabase import since we're using mock data
 import { type Order, type Product } from '@/lib/supabase'
-import { ShoppingBag, TrendingUp, Package, DollarSign } from 'lucide-react'
+import { ShoppingBag, TrendingUp, Package, DollarSign, UserSwitch } from 'lucide-react'
 import Link from 'next/link'
 
 interface DashboardStats {
@@ -85,6 +85,12 @@ const MOCK_ORDERS: Order[] = [
   }
 ]
 
+const DEMO_ACCOUNTS = [
+  { id: 'general', name: 'General Demo' },
+  { id: 'client_a', name: 'Client A Demo' },
+  { id: 'client_b', name: 'Client B Demo' },
+]
+
 // Import MOCK_PRODUCTS from mock-data
 import { MOCK_PRODUCTS } from '@/lib/mock-data'
 
@@ -97,27 +103,41 @@ export default function AdminDashboard() {
   })
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedDemo, setSelectedDemo] = useState(DEMO_ACCOUNTS[0].id)
 
   useEffect(() => {
-    fetchDashboardData()
-  }, [])
+    fetchDashboardData(selectedDemo)
+  }, [selectedDemo])
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (demoId: string) => {
     // Simulate loading with mock data
+    setLoading(true)
     setTimeout(() => {
+      // Customize mock data based on the selected demo account
+      let currentOrders = [...MOCK_ORDERS]
+      let productMultiplier = 1
+
+      if (demoId === 'client_a') {
+        currentOrders = MOCK_ORDERS.map(o => ({ ...o, total_amount: o.total_amount * 1.5 }))
+        productMultiplier = 0.8
+      } else if (demoId === 'client_b') {
+        currentOrders = MOCK_ORDERS.map(o => ({ ...o, total_amount: o.total_amount * 3.2 }))
+        productMultiplier = 1.5
+      }
+
       // Calculate stats from mock data
-      const totalRevenue = MOCK_ORDERS.reduce((sum, order) => sum + (order.total_amount || 0), 0)
-      const pendingOrders = MOCK_ORDERS.filter(order => order.status === 'pending').length
+      const totalRevenue = currentOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0)
+      const pendingOrders = currentOrders.filter(order => order.status === 'pending').length
 
       setStats({
-        totalOrders: MOCK_ORDERS.length,
+        totalOrders: currentOrders.length,
         totalRevenue,
-        totalProducts: MOCK_PRODUCTS.length,
+        totalProducts: Math.floor(MOCK_PRODUCTS.length * productMultiplier),
         pendingOrders,
       })
 
       // Get recent orders (last 5)
-      setRecentOrders(MOCK_ORDERS.slice(0, 5))
+      setRecentOrders(currentOrders.slice(0, 5))
       setLoading(false)
     }, 500)
   }
@@ -157,10 +177,27 @@ export default function AdminDashboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4"
         >
-          <h1 className="text-5xl font-bold text-foreground mb-2">Admin Dashboard</h1>
-          <p className="text-lg text-muted-foreground">Welcome back! Here&apos;s your store performance.</p>
+          <div>
+            <h1 className="text-5xl font-bold text-foreground mb-2">Admin Dashboard</h1>
+            <p className="text-lg text-muted-foreground">Welcome back! Here&apos;s your store performance.</p>
+          </div>
+          
+          <div className="flex items-center gap-3 bg-secondary/50 p-2 rounded-lg border border-border">
+            <UserSwitch className="w-5 h-5 text-muted-foreground ml-2" />
+            <select
+              value={selectedDemo}
+              onChange={(e) => setSelectedDemo(e.target.value)}
+              className="bg-transparent border-none text-sm font-medium focus:ring-0 cursor-pointer pr-8 text-foreground"
+            >
+              {DEMO_ACCOUNTS.map(account => (
+                <option key={account.id} value={account.id} className="bg-background">
+                  {account.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </motion.div>
 
         {/* Stats Grid */}
