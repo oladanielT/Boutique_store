@@ -13,7 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Don Classic, Boutique Fashion in Ile-Ife",
+  title: "Premium boutique fashion in Ile-Ife",
   description:
     "Premium boutique fashion in Ile-Ife, Nigeria. Curated collections, quality fabrics, and timeless style from Don Classic.",
   icons: {
