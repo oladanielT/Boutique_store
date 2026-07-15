@@ -14,11 +14,11 @@ export function Footer() {
       showToast('Please enter a valid email address', 'error')
       return
     }
-    showToast('Welcome to the Don Classic list — check your inbox soon!', 'success')
+    showToast('Welcome to the Demo Store list — check your inbox soon!', 'success')
     setEmail('')
   }
 
-  // WhatsApp number for Don Classic
+  // WhatsApp number for Demo Store
   const whatsappNumber = '2348035419923' // Using the same number from store.ts but removing the + prefix for WhatsApp
   const whatsappMessage = encodeURIComponent('Hello! I\'m interested in your boutique items. Can you help me with some questions?')
 
@@ -27,7 +27,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           <div className="lg:col-span-2">
-            <h3 className="font-bold text-foreground mb-3 text-lg">Don Classic</h3>
+            <h3 className="font-bold text-foreground mb-3 text-lg">Demo Store</h3>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-xs">
               A boutique in {STORE.city}, {STORE.state} — premium fabrics, timeless cuts, and pieces
               you&apos;ll reach for season after season.
@@ -94,7 +94,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Don Classic. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Demo Store. All rights reserved.</p>
           <p className="text-xs">{STORE.city}, {STORE.country} · Boutique fashion since 2024</p>
         </div>
       </div>

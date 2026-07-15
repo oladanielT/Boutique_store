@@ -23,7 +23,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem('Don Classic-theme') as Theme | null
+    const stored = localStorage.getItem('Demo Store-theme') as Theme | null
     setThemeState(stored === 'dark' ? 'dark' : 'light')
     setMounted(true)
   }, [])
@@ -33,7 +33,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement
     root.classList.remove('light', 'dark')
     root.classList.add(theme)
-    localStorage.setItem('Don Classic-theme', theme)
+    localStorage.setItem('Demo Store-theme', theme)
   }, [theme, mounted])
 
   const setTheme = (t: Theme) => setThemeState(t)

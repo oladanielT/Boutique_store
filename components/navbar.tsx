@@ -32,7 +32,7 @@ export function Navbar({ cartCount = 0, isAdmin = false }: { cartCount?: number;
         <div className="h-16 flex justify-between items-center w-full">
           <Link href={isAdmin ? '/admin' : '/'} className="flex items-center gap-2 group">
             <span className={`text-xl font-bold tracking-tight group-hover:text-accent transition-colors ${transparent ? 'text-white' : 'text-foreground'}`}>
-              Don Classic
+              Demo Store
             </span>
             <span className={`text-xs font-medium hidden sm:inline tracking-widest uppercase ${transparent ? 'text-white/70' : 'text-muted-foreground'}`}>
               Wears

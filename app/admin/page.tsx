@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { formatPrice } from '@/lib/currency'
 // Remove supabase import since we're using mock data
 import { type Order, type Product } from '@/lib/supabase'
-import { ShoppingBag, TrendingUp, Package, DollarSign, UserSwitch } from 'lucide-react'
+import { ShoppingBag, TrendingUp, Package, DollarSign, Users } from 'lucide-react'
 import Link from 'next/link'
 
 interface DashboardStats {
@@ -87,8 +87,8 @@ const MOCK_ORDERS: Order[] = [
 
 const DEMO_ACCOUNTS = [
   { id: 'general', name: 'General Demo' },
-  { id: 'client_a', name: 'Client A Demo' },
-  { id: 'client_b', name: 'Client B Demo' },
+  { id: 'client_a', name: 'Demo Store A' },
+  { id: 'client_b', name: 'Demo Store B' },
 ]
 
 // Import MOCK_PRODUCTS from mock-data
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex items-center gap-3 bg-secondary/50 p-2 rounded-lg border border-border">
-            <UserSwitch className="w-5 h-5 text-muted-foreground ml-2" />
+            <Users className="w-5 h-5 text-muted-foreground ml-2" />
             <select
               value={selectedDemo}
               onChange={(e) => setSelectedDemo(e.target.value)}

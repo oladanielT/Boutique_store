@@ -1,7 +1,7 @@
 import { FREE_SHIPPING_THRESHOLD } from './currency'
 
 export const STORE = {
-  name: 'Don Classic',
+  name: 'Demo Store',
   tagline: 'Order for quality suits, Blazers, shirts, shoes, Polos/T shirts, Jeans, Perfumes & accessories',
   city: 'Ile-Ife',
   state: 'Osun State',

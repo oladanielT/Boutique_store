@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 export function WhatsAppChat() {
   const [isVisible, setIsVisible] = useState(false);
   
-  // WhatsApp number for Don Classic
+  // WhatsApp number for Demo Store
   const whatsappNumber = '2348035419923'; // Using the same number from store.ts but removing the + prefix for WhatsApp
   const whatsappMessage = encodeURIComponent('Hello! I\'m interested in your boutique items. Can you help me with some questions?');
 

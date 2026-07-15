@@ -43,7 +43,7 @@ export function HeroSection() {
     <section
       className="relative min-h-[680px] h-[min(900px,100svh)] overflow-hidden"
       aria-roledescription="carousel"
-      aria-label="Featured Don Classic collections"
+      aria-label="Featured Demo Store collections"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
