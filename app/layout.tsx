@@ -17,11 +17,7 @@ export const metadata: Metadata = {
   description:
     "Premium boutique fashion in Ile-Ife, Nigeria. Curated collections, quality fabrics, and timeless style from Don Classic.",
   icons: {
-    icon: [
-      { url: "/Don Classic-icon.svg", type: "image/svg+xml" },
-      { url: "/icon-light-32x32.png", sizes: "32x32" },
-      { url: "/apple-icon.png", sizes: "180x180" }
-    ],
+    icon: [],
   },
 };
 
